@@ -1,0 +1,205 @@
+{
+	"flow_name" : "finalA",
+	"steps" : [
+		{
+			"class" : "weka.knowledgeflow.steps.Loader",
+			"properties" : {
+				"loader" : {
+					"type" : "loader",
+					"class" : "weka.core.converters.ArffLoader",
+					"filePath" : "C:/Users/leonidas/Desktop/Datos/DataEntrenamientoE.arff",
+					"useRelativePath" : false
+				},
+				"name" : "Carga los datos de entrenamiento"
+			},
+			"connections" : {
+				"dataSet" : [
+					"Hace que los datos sean reconocidos como de entrenamiento"
+				]
+			},
+			"coordinates" : "0,80"
+		},
+		{
+			"class" : "weka.knowledgeflow.steps.Loader",
+			"properties" : {
+				"loader" : {
+					"type" : "loader",
+					"class" : "weka.core.converters.ArffLoader",
+					"filePath" : "C:/Users/leonidas/Desktop/Datos/DataPruebaE.arff",
+					"useRelativePath" : false
+				},
+				"name" : "Carga los datos de prueba"
+			},
+			"connections" : {
+				"dataSet" : [
+					"Hace que los datos sean reconocidos como de test"
+				]
+			},
+			"coordinates" : "36,287"
+		},
+		{
+			"class" : "weka.knowledgeflow.steps.TestSetMaker",
+			"properties" : {
+				"name" : "Hace que los datos sean reconocidos como de test"
+			},
+			"connections" : {
+				"testSet" : [
+					"Define la columna clase"
+				]
+			},
+			"coordinates" : "194,288"
+		},
+		{
+			"class" : "weka.knowledgeflow.steps.TrainingSetMaker",
+			"properties" : {
+				"name" : "Hace que los datos sean reconocidos como de entrenamiento"
+			},
+			"connections" : {
+				"trainingSet" : [
+					"Define la columna clase"
+				]
+			},
+			"coordinates" : "154,79"
+		},
+		{
+			"class" : "weka.knowledgeflow.steps.ClassAssigner",
+			"properties" : {
+				"classColumn" : "E",
+				"name" : "Define la columna clase"
+			},
+			"connections" : {
+				"testSet" : [
+					"Define qué valor de la clase será \"positivo\""
+				]
+			},
+			"coordinates" : "337,288"
+		},
+		{
+			"class" : "weka.knowledgeflow.steps.ClassValuePicker",
+			"properties" : {
+				"classValue" : "1",
+				"name" : "Define qué valor de la clase será \"positivo\""
+			},
+			"connections" : {
+				"testSet" : [
+					"MLP",
+					"CVM",
+					"RANDOM FOREST"
+				]
+			},
+			"coordinates" : "478,288"
+		},
+		{
+			"class" : "weka.knowledgeflow.steps.Classifier",
+			"properties" : {
+				"classifier" : {
+					"type" : "optionHandler",
+					"class" : "weka.classifiers.functions.MultilayerPerceptron",
+					"options" : "-L 0.3 -M 0.2 -N 500 -V 0 -S 0 -E 20 -H a"
+				},
+				"loadClassifierFileName" : "",
+				"name" : "MLP",
+				"resetIncrementalClassifier" : false,
+				"updateIncrementalClassifier" : true
+			},
+			"connections" : {
+				"batchClassifier" : [
+					"Evalua los clasificadores"
+				],
+				"text" : [
+					"TextViewer"
+				]
+			},
+			"coordinates" : "720,80"
+		},
+		{
+			"class" : "weka.knowledgeflow.steps.Classifier",
+			"properties" : {
+				"classifier" : {
+					"type" : "optionHandler",
+					"class" : "weka.classifiers.functions.SMO",
+					"options" : "-C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K \"weka.classifiers.functions.supportVector.PolyKernel -E 1.0 -C 250007\" -calibrator \"weka.classifiers.functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4\""
+				},
+				"loadClassifierFileName" : "",
+				"name" : "CVM",
+				"resetIncrementalClassifier" : false,
+				"updateIncrementalClassifier" : true
+			},
+			"connections" : {
+				"batchClassifier" : [
+					"Evalua los clasificadores"
+				]
+			},
+			"coordinates" : "701,183"
+		},
+		{
+			"class" : "weka.knowledgeflow.steps.Classifier",
+			"properties" : {
+				"classifier" : {
+					"type" : "optionHandler",
+					"class" : "weka.classifiers.trees.RandomForest",
+					"options" : "-P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1"
+				},
+				"loadClassifierFileName" : "",
+				"name" : "RANDOM FOREST",
+				"resetIncrementalClassifier" : false,
+				"updateIncrementalClassifier" : true
+			},
+			"connections" : {
+				"batchClassifier" : [
+					"Evalua los clasificadores MLP"
+				]
+			},
+			"coordinates" : "708,287"
+		},
+		{
+			"class" : "weka.knowledgeflow.steps.TextViewer",
+			"properties" : {
+				"name" : "Registra resultados"
+			},
+			"connections" : {
+			},
+			"coordinates" : "1040,80"
+		},
+		{
+			"class" : "weka.knowledgeflow.steps.ModelPerformanceChart",
+			"properties" : {
+				"name" : "Visualizar gráficos de rendimiento (como ROC)",
+				"offscreenAdditionalOpts" : "",
+				"offscreenHeight" : "400",
+				"offscreenRendererName" : "Weka Chart Renderer",
+				"offscreenWidth" : "500",
+				"offscreenXAxis" : "",
+				"offscreenYAxis" : ""
+			},
+			"connections" : {
+			},
+			"coordinates" : "1115,186"
+		},
+		{
+			"class" : "weka.knowledgeflow.steps.TextViewer",
+			"properties" : {
+				"name" : "TextViewer"
+			},
+			"connections" : {
+			},
+			"coordinates" : "1000,0"
+		},
+		{
+			"class" : "weka.knowledgeflow.steps.ClassifierPerformanceEvaluator",
+			"properties" : {
+				"costMatrixString" : "",
+				"errorPlotPointSizeProportionalToMargin" : true,
+				"evaluateWithRespectToCosts" : false,
+				"evaluationMetricsToOutput" : "Correct,Incorrect,Kappa,Total cost,Average cost,KB relative,KB information,Correlation,Complexity 0,Complexity scheme,Complexity improvement,MAE,RMSE,RAE,RRSE,TP rate,FP rate,Precision,Recall,F-measure,MCC,ROC area,PRC area",
+				"name" : "Evalua los clasificadores MLP"
+			},
+			"connections" : {
+				"thresholdData" : [
+					"Visualizar gráficos de rendimiento (como ROC)"
+				]
+			},
+			"coordinates" : "880,320"
+		}
+	]
+}
